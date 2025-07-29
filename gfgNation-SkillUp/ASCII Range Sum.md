@@ -117,174 +117,89 @@ public class ASCIIRangeSum {
 ```
 
 ---
+## ⚡ Optimal Solution (Array-based for lowercase only)
 
-## ⚡ Optimal Solution
+### 🔍 **Example**
 
-### 🔍 Optimization Idea:
+**Input:** `"abcaebd"`
 
-1. First pass: record **first and last indices** of each character using a `Map<Character, int[]>`.
-2. Second pass: for characters whose first ≠ last, compute sum from index `first+1` to `last-1`.
+**Step-by-step:**
 
-### ✅ Time Complexity: `O(N)`, Space: `O(26)` or `O(N)` max.
+* Character `'a'` occurs at indices 0 and 3 → characters in between: `'b'`, `'c'`
+  ASCII sum = 98 (`'b'`) + 99 (`'c'`) = **197**
+
+* Character `'b'` occurs at indices 1 and 6 → characters in between: `'c'`, `'a'`, `'e'`
+  ASCII sum = 99 (`'c'`) + 97 (`'a'`) + 101 (`'e'`) = **297**
+
+* Character `'e'` occurs only once → ignored
+
+* Character `'d'` occurs only once → ignored
+
+* Character `'c'` also only once → ignored
+
+**Output:** `[197, 297]`
 
 ---
 
-### 🚀 Java Code (Optimal)
+### 💡 **Approach & Intuition**
+
+1. **Track First and Last Indices:**
+
+   * Use two arrays of size 26 (for each lowercase letter) to store:
+
+     * `first[i]`: first index of character `i + 'a'`
+     * `last[i]`: last index of character `i + 'a'`
+
+2. **Scan the string once** to fill in these positions.
+
+3. **For each character** from `'a'` to `'z'`:
+
+   * If it occurs more than once (i.e., `first[c] < last[c]`), iterate from `first[c]+1` to `last[c]-1` and calculate the sum of ASCII values.
+   * If the sum is not zero, add it to the result.
+
+4. **Return** the final list of ASCII sums.
+
+---
+
+### ✅ **Code**
 
 ```java
 import java.util.*;
 
-public class ASCIIRangeSum {
-    public static List<Integer> optimalASCII(String s) {
-        Map<Character, int[]> map = new HashMap<>();
+class Solution {
+    public ArrayList<Integer> asciirange(String s) {
+        int[] first = new int[26], last = new int[26];
+        Arrays.fill(first, -1);
+        Arrays.fill(last, -1);
+        ArrayList<Integer> result = new ArrayList<>();
+        int n = s.length();
 
-        // Step 1: Record first and last occurrence
-        for (int i = 0; i < s.length(); i++) {
-            char ch = s.charAt(i);
-            if (!map.containsKey(ch)) {
-                map.put(ch, new int[]{i, i});
-            } else {
-                map.get(ch)[1] = i;
-            }
+        // Step 1: Store first and last index of each character
+        for (int i = 0; i < n; i++) {
+            int idx = s.charAt(i) - 'a';
+            if (first[idx] == -1) first[idx] = i;
+            last[idx] = i;
         }
 
-        // Step 2: Compute ASCII sum between first and last index
-        List<Integer> result = new ArrayList<>();
-        for (Map.Entry<Character, int[]> entry : map.entrySet()) {
-            int start = entry.getValue()[0];
-            int end = entry.getValue()[1];
-            if (start != end) {
+        // Step 2: Process each character range
+        for (int c = 0; c < 26; c++) {
+            if (first[c] != -1 && first[c] < last[c]) {
                 int sum = 0;
-                for (int i = start + 1; i < end; i++) {
+                for (int i = first[c] + 1; i < last[c]; i++) {
                     sum += s.charAt(i);
                 }
-                if (sum > 0) {
-                    result.add(sum);
-                }
+                if (sum != 0) result.add(sum);
             }
         }
 
         return result;
-    }
-
-    public static void main(String[] args) {
-        System.out.println(optimalASCII("abacab")); // [294, 293]
-        System.out.println(optimalASCII("acdac"));  // [197, 199]
     }
 }
 ```
 
 ---
 
-## ⚡ Further Optimized Approach – Using Prefix Sum
 
-### 🧠 Idea:
-
-1. Precompute a `prefixSum[]` array:
-
-   * `prefixSum[i] = sum of ASCII values from s[0] to s[i-1]`
-2. For each character whose first and last index differ:
-
-   * Compute sum using:
-
-     ```
-     asciiSum = prefixSum[last] - prefixSum[first + 1]
-     ```
-
-### ✅ Time Complexity:
-
-* Preprocessing: `O(N)`
-* Sum queries: `O(1)` per character (26 max)
-* Overall: `O(N)`
-
----
-
-## 💡 Why is it Better?
-
-Instead of looping between indices every time, you just **subtract two prefix sums**. Much faster for large strings.
-
----
-
-## 🧪 Dry Run Example
-
-```text
-s = "abacab"
-Indices: 0 1 2 3 4 5
-String:  a b a c a b
-ASCII:   97 98 97 99 97 98
-
-Prefix Sum: [0, 97, 195, 292, 391, 488, 586]
-            s[0] to s[0] = 97     → prefixSum[1]
-            s[0] to s[1] = 195    → prefixSum[2]
-            ...
-```
-
-For `'a'`: first=0, last=4
-Sum = prefixSum\[4] - prefixSum\[1] = 391 - 97 = **294**
-
-For `'b'`: first=1, last=5
-Sum = prefixSum\[5] - prefixSum\[2] = 488 - 195 = **293**
-
-✅ Matches expected results!
-
----
-
-## 🚀 Java Code with Prefix Sum Optimization
-
-```java
-import java.util.*;
-
-public class ASCIIRangeSum {
-    public static List<Integer> prefixSumASCII(String s) {
-        int n = s.length();
-        int[] prefixSum = new int[n + 1]; // prefixSum[i] = sum from s[0] to s[i - 1]
-
-        // Step 1: Build prefix sum of ASCII values
-        for (int i = 0; i < n; i++) {
-            prefixSum[i + 1] = prefixSum[i] + s.charAt(i);
-        }
-
-        // Step 2: Track first and last occurrence of characters
-        Map<Character, int[]> map = new HashMap<>();
-        for (int i = 0; i < n; i++) {
-            char ch = s.charAt(i);
-            if (!map.containsKey(ch)) {
-                map.put(ch, new int[]{i, i});
-            } else {
-                map.get(ch)[1] = i;
-            }
-        }
-
-        // Step 3: Use prefix sum to calculate ASCII range sum
-        List<Integer> result = new ArrayList<>();
-        for (Map.Entry<Character, int[]> entry : map.entrySet()) {
-            int first = entry.getValue()[0];
-            int last = entry.getValue()[1];
-            if (first != last) {
-                int sum = prefixSum[last] - prefixSum[first + 1];
-                if (sum > 0) result.add(sum);
-            }
-        }
-
-        return result;
-    }
-
-    public static void main(String[] args) {
-        System.out.println(prefixSumASCII("abacab")); // [294, 293]
-        System.out.println(prefixSumASCII("acdac"));  // [199, 197]
-    }
-}
-```
-
----
-
-## ✅ When to Use This Optimization
-
-* ✅ For long strings (e.g. 10⁶ characters)
-* ✅ When you have to calculate range sums multiple times
-* ✅ When performance matters
-
----
 
 
 
