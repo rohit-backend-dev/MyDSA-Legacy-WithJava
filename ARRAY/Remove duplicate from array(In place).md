@@ -19,6 +19,17 @@ class Solution {
 }
 ```
 
+
+## Step by Step explanation:
+
+* At first, the first fan is always allowed in → i = 0.
+* Now j starts checking from seat 1.
+* If nums[j] == nums[i] → this fan is a duplicate, so they’re ignored (not moved forward).
+* If nums[j] != nums[i] → 🎉 new unique fan found!
+* Move i forward (i++) to open the next available seat.
+* Seat this new fan at nums[i].
+* Continue until everyone is checked.
+
 ### Explanation
 
 * Use two pointers (`i` for unique index, `j` for scanning).
