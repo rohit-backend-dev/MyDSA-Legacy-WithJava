@@ -51,6 +51,29 @@ class Solution {
 ```
 
 
+2️⃣ Optimal
+```
+class Solution {
+    public void moveZeroes(int[] arr) {
+        int n = arr.length;
+        int j = 0;
+
+        // Step 1: Write non-zero elements directly at front
+        for (int i = 0; i < n; i++) {
+            if (arr[i] != 0) {
+                arr[j++] = arr[i];   // place non-zero element at index j
+            }
+        }
+
+        // Step 2: Fill the rest with 0
+        while (j < n) {
+            arr[j++] = 0;
+        }
+    }
+}
+
+```
+
 ---
 
 ## 3️⃣ Most Optimal (One-pass, Swap Method)
