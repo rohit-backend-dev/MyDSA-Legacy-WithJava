@@ -49,6 +49,31 @@ class Solution {
 
 **Example:** `n=5` → Output: `8`
 
+```java
+if (n <= 2) return n;
+```
+
+---
+
+### **Meaning**
+
+* It handles the **base cases** for the problem.
+* In the Climbing Stairs problem:
+
+1. **If `n = 1`** (1 step)
+
+   * Only **1 way** to climb: `[1]`
+   * So we **return 1**
+
+2. **If `n = 2`** (2 steps)
+
+   * Two ways to climb: `[1+1]` or `[2]`
+   * So we **return 2**
+
+* That’s why the code says:
+
+> “If the number of steps is 1 or 2 (`n <= 2`), return `n` because the answer is exactly the same as `n`.”
+
 ---
 
 ## **3. Min Cost Climbing Stairs** (LeetCode 746)
