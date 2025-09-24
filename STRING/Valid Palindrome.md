@@ -6,6 +6,55 @@ A phrase is a palindrome if, after converting all uppercase letters into lowerca
 
 ---
 
+# If pre-built functions are not allowed
+
+```
+class Solution {
+    public boolean isPalindrome(String s) {
+        int left = 0;
+        int right = s.length() - 1;
+
+        while (left < right) {
+            // Move left to next valid character
+            while (left < right && !isAlphanumeric(s.charAt(left))) {
+                left++;
+            }
+            // Move right to previous valid character
+            while (left < right && !isAlphanumeric(s.charAt(right))) {
+                right--;
+            }
+
+            if (left < right) {
+                char cLeft = toLowerCase(s.charAt(left));
+                char cRight = toLowerCase(s.charAt(right));
+
+                if (cLeft != cRight) {
+                    return false;
+                }
+                left++;
+                right--;
+            }
+        }
+        return true;
+    }
+
+    // Helper to check if character is alphanumeric
+    private boolean isAlphanumeric(char c) {
+        return (c >= 'a' && c <= 'z') || (c >= 'A' && c <= 'Z') || (c >= '0' && c <= '9');
+    }
+
+    // Helper to convert uppercase to lowercase manually
+    private char toLowerCase(char c) {
+        if (c >= 'A' && c <= 'Z') {
+            return (char)(c - 'A' + 'a');
+        }
+        return c;
+    }
+}
+
+```
+
+
 ## ✅ Solution 1 — Clean String + Two Pointers
 
 ### 💡 Idea
