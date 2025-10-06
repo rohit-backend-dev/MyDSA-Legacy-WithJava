@@ -38,13 +38,14 @@ class Solution {
         int count = 0;
 
         for (char ch : sentence.toCharArray()) {
-            int idx = ch - 'a';
-            if (!seen[idx]) {
-                seen[idx] = true;
-                if (++count == 26) return true;
+            int index = ch - 'a';
+            if (!seen[index]) {      // mark the character as seen
+                seen[index] = true;
+                count++;              // increment count for a new letter
             }
         }
-        return false; 
+
+        return count == 26;          // true if all 26 letters are seen
     }
 }
 ```
